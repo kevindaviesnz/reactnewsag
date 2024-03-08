@@ -1,0 +1,63 @@
+https://www.freecodecamp.org/news/get-started-with-react-for-beginners/
+
+# @see https://www.freecodecamp.org/learn/front-end-development-libraries/front-end-development-libraries-projects/build-a-random-quote-machine
+# @see https://www.freecodecamp.org/learn/front-end-development-libraries/front-end-development-libraries-projects/build-a-javascript-calculator
+
+npm update -g
+npx create-react-app my-app
+cd my-app
+npm start
+
+Github:
+
+echo "# reactnewsag" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/kevindaviesnz/reactnewsag.git
+git push -u origin main
+
+Running server:
+$ npx http-server -p 3000
+or
+$ python -m http.server 3000
+
+src/App.js
+
+Deploying to Github pages:
+
+https://github.com/gitname/react-gh-pages
+
+npm install --save gh-pages
+package.json:
+"homepage": "https://kevindaviesnz.github.io/reactnewsag",
+"scripts": {
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build",
+   "build": "react-scripts build",
+   "test": "react-scripts test",
+  "eject": "react-scripts eject"
+  ...
+
+},
+
+$ git remote add origin https://github.com/kevindaviesnz/reactnewsag.git
+
+$ npm run deploy -- -m "Deploy React app to GitHub Pages"
+
+
+npm run deploy
+github -> reactnewsag -> settings -> pages -> select gh-pages as branch
+
+$ git add .
+$ git commit -m "Configure React app for deployment to GitHub Pages"
+$ git push origin master
+
+
+
+https://kevindaviesnz.github.io/reactnewsag/
+
+https://kdaviesnz.atlassian.net/jira/software/c/projects/NWAG/issues
+
+http://reactnewsag.s3-website-ap-southeast-2.amazonaws.com/

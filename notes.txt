@@ -48,3 +48,5 @@ npm run deploy
 github -> reactcalculator -> settings -> pages -> select gh-pages as branch
 
 https://kevindaviesnz.github.io/reactcalculator/
+
+https://kdaviesnz.atlassian.net/jira/software/c/projects/NWAG/issues

@@ -1,17 +1,25 @@
 import boto3
 import json
-s3_client = boto3.client('s3')
-domain = "kdaviesnz2.github.io"
-subdomain = "reactnewsag.kdaviesnz2.github.io"
-hosted_zone_name = "kevindaviesnz2.github.io.s3-website-ap-southeast-2.amazonaws.com."
-# S3 website endpoint (Do not use "http://" or "https://", just the domain)
-s3_website_endpoint = 's3-website-ap-southeast-2.amazonaws.com'
-route53_client = boto3.client('route53')
 
 def add_static_website_bucket(domain:str, s3_client:object):
     s3_client.create_bucket(
-        Bucket=domain
+        Bucket=domain,
+        CreateBucketConfiguration={
+            'LocationConstraint': 'ap-southeast-2' 
+        }
     )
+
+    # Update the bucket's public access configuration
+    s3_client.put_public_access_block(
+        Bucket=domain,
+        PublicAccessBlockConfiguration={
+            'BlockPublicAcls': False,
+            'IgnorePublicAcls': False,
+            'BlockPublicPolicy': False,
+            'RestrictPublicBuckets': False
+        }
+    )
+
     # Enable website hosting
     website_configuration = {
         'ErrorDocument': {'Key': 'error.html'},
@@ -42,12 +50,14 @@ def add_static_website_bucket(domain:str, s3_client:object):
     # Apply the policy to the bucket
     s3_client.put_bucket_policy(Bucket=domain, Policy=policy_json)
     print(f"Policy added to bucket: {domain}")
+    
+
         
 def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_client:object):
     # Create Route 53 hosted zone
     route53_response = route53_client.create_hosted_zone(
         Name=hosted_zone_name,
-        CallerReference='ilkjfasioucnklsdfjioajff',  # A unique string used to ensure idempotent requests
+        CallerReference='auniname',  # A unique string used to ensure idempotent requests
         HostedZoneConfig={
             'Comment': 'Hosted zone for react news ag',
             'PrivateZone': False
@@ -66,7 +76,7 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
                         'Name': domain,
                         'Type': 'A',  # Alias record
                         'AliasTarget': {
-                            'HostedZoneId': 'Z2F56UZL2M1ACD',  # This is the hosted zone ID for S3 websites (This value is for the ap-southeast-2 region; it may vary)
+                            'HostedZoneId': hosted_zone_id,  # This is the hosted zone ID for S3 websites (This value is for the ap-southeast-2 region; it may vary)
                             'DNSName': f'{s3_website_endpoint}',
                             'EvaluateTargetHealth': False
                         }
@@ -75,18 +85,26 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
             ]
         }
     )
-    pass
+    
 
 def remove_bucket(domain:str, s3_client:object):
     s3_client.delete_bucket(
         Bucket=domain
     )    
     
-add_static_website_bucket(domain=domain, s3_client=s3_client)
-add_static_website_bucket(domain=subdomain, s3_client=s3_client)
+s3_client = boto3.client('s3')
+domain = "kdaviesnz2.github.io"
+subdomain = "reactnewsag.kdaviesnz2.github.io"
+hosted_zone_name = "kevindaviesnz2.github.io.s3-website-ap-southeast-2.amazonaws.com."
+# S3 website endpoint (Do not use "http://" or "https://", just the domain)
+s3_website_endpoint = 's3-website-ap-southeast-2.amazonaws.com'
+route53_client = boto3.client('route53')
+    
+#add_static_website_bucket(domain=domain, s3_client=s3_client)
+#add_static_website_bucket(domain=subdomain, s3_client=s3_client)
 configure_route_53(hosted_zone_name=hosted_zone_name, s3_website_endpoint=s3_website_endpoint, route53_client=route53_client)
-remove_bucket(domain=domain, s3_client=s3_client)
-remove_bucket(domain=subdomain, s3_client=s3_client)
+#remove_bucket(domain=domain, s3_client=s3_client)
+#remove_bucket(domain=subdomain, s3_client=s3_client)
 
 
 

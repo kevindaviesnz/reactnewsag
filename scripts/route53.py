@@ -93,8 +93,8 @@ def remove_bucket(domain:str, s3_client:object):
     )    
     
 s3_client = boto3.client('s3')
-domain = "kdaviesnz2.github.io"
-subdomain = "reactnewsag.kdaviesnz2.github.io"
+domain = "kevindaviesnz.github.io"
+subdomain = "reactnewsag.kevindaviesnz.github.io"
 hosted_zone_name = "kevindaviesnz2.github.io.s3-website-ap-southeast-2.amazonaws.com."
 # S3 website endpoint (Do not use "http://" or "https://", just the domain)
 s3_website_endpoint = 's3-website-ap-southeast-2.amazonaws.com'
@@ -102,8 +102,8 @@ route53_client = boto3.client('route53')
     
 #add_static_website_bucket(domain=domain, s3_client=s3_client)
 #add_static_website_bucket(domain=subdomain, s3_client=s3_client)
-configure_route_53(hosted_zone_name=hosted_zone_name, s3_website_endpoint=s3_website_endpoint, route53_client=route53_client)
-#remove_bucket(domain=domain, s3_client=s3_client)
+#configure_route_53(hosted_zone_name=hosted_zone_name, s3_website_endpoint=s3_website_endpoint, route53_client=route53_client)
+remove_bucket(domain=domain, s3_client=s3_client)
 #remove_bucket(domain=subdomain, s3_client=s3_client)
 
 

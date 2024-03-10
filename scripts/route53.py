@@ -75,51 +75,20 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
     
     """
         response = route53_client.change_resource_record_sets(
-        HostedZoneId=hosted_zone_id,
-        ChangeBatch={
-            'Comment': 'Adding alias record to S3 website endpoint',
-            'Changes': [
+        HostedZoneId=hosted_zone_id, # required
+        ChangeBatch={ # required
+            'Comment': 'Adding alias record to S3 website endpoint', # optional
+            'Changes': [ # required
                 {
-                    'Action': 'UPSERT',
-                    'ResourceRecordSet': {
+                    'Action': 'CREATE', # required
+                    'ResourceRecordSet': { # required
                         'Name': domain,
-                        'Type': 'A',  # Alias record
-                        'SetIdentifier': 'string',
-                        'Weight': 123,
-                        'Region': 'ap-southeast-2',
-                        'GeoLocation': {
-                            'ContinentCode': 'string',
-                            'CountryCode': 'string',
-                            'SubdivisionCode': 'string'
-                         },
-                        'Failover': 'PRIMARY'|'SECONDARY',
-                        'MultiValueAnswer': True|False,
-                        'TTL': 123,
-                        'ResourceRecords': [
-                            {
-                                'Value': 'string'
-                            },
-                        ],                         
+                        'Type': 'A',  # Alias record, @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html
                         'AliasTarget': {
-                            'HostedZoneId': hosted_zone_id,  # This is the hosted zone ID for S3 websites (This value is for the ap-southeast-2 region; it may vary)
+                            'HostedZoneId': hosted_zone_id,  # Required. This is the hosted zone ID for S3 websites (This value is for the ap-southeast-2 region; it may vary)
                             'DNSName': f'{s3_website_endpoint}',
                             'EvaluateTargetHealth': False
                         }
-                        'HealthCheckId': 'string',
-                        'TrafficPolicyInstanceId': 'string',
-                        'CidrRoutingConfig': {
-                            'CollectionId': 'string',
-                            'LocationName': 'string',
-                         },
-                        'GeoProximityLocation': {
-                            'AWSRegion': 'string',
-                            'LocalZoneGroup': 'string',
-                            'Coordinates': {
-                                'Latitude': 'string',
-                                'Longitude': 'string'
-                            },
-                            'Bias': 123
-                        }                         
                     }
                 }
             ]

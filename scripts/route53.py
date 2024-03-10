@@ -57,7 +57,7 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
     # Create Route 53 hosted zone
     route53_response = route53_client.create_hosted_zone(
         Name=hosted_zone_name,
-        CallerReference='u9sif',  # A unique string used to ensure idempotent requests
+        CallerReference='u9xx]987sif',  # A unique string used to ensure idempotent requests
         HostedZoneConfig={
             'Comment': 'Hosted zone for react news ag',
             'PrivateZone': False
@@ -73,8 +73,8 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
     @see https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/route53/client/change_resource_record_sets.html#
     """
     
-    """
-        response = route53_client.change_resource_record_sets(
+
+    response = route53_client.change_resource_record_sets(
         HostedZoneId=hosted_zone_id, # required
         ChangeBatch={ # required
             'Comment': 'Adding alias record to S3 website endpoint', # optional
@@ -94,8 +94,9 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
             ]
         }
     )
+    print(response)
 
-    """
+
     
 
 def remove_bucket(domain:str, s3_client:object):

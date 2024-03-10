@@ -57,13 +57,15 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
     # Create Route 53 hosted zone
     route53_response = route53_client.create_hosted_zone(
         Name=hosted_zone_name,
-        CallerReference='u9xx]987sif',  # A unique string used to ensure idempotent requests
+        CallerReference='1cr',  # A unique string used to ensure idempotent requests
         HostedZoneConfig={
             'Comment': 'Hosted zone for react news ag',
             'PrivateZone': False
         }
     )
     hosted_zone_id = route53_response['HostedZone']['Id']
+    print(hosted_zone_id)
+    print(hosted_zone_id.length)
     # Create the alias record
     """
     change_resource_record_set():Creates, changes, or deletes a resource record set, which contains authoritative DNS
@@ -85,6 +87,7 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
                         'Name': domain,
                         'Type': 'A',  # Alias record, @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html
                         'AliasTarget': {
+                             # For Cloud set HostedZoneId to "Z2FDTNDATAQYW2"
                             'HostedZoneId': hosted_zone_id,  # Required. This is the hosted zone ID for S3 websites (This value is for the ap-southeast-2 region; it may vary)
                             'DNSName': f'{s3_website_endpoint}',
                             'EvaluateTargetHealth': False

@@ -1,5 +1,6 @@
 import boto3
 import json
+import uuid
 
 def add_static_website_bucket(domain:str, s3_client:object):
     s3_client.create_bucket(
@@ -57,15 +58,21 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
     # Create Route 53 hosted zone
     route53_response = route53_client.create_hosted_zone(
         Name=hosted_zone_name,
-        CallerReference='1cr',  # A unique string used to ensure idempotent requests
+        CallerReference=str(uuid.uuid4()),  # A unique string used to ensure idempotent requests
         HostedZoneConfig={
             'Comment': 'Hosted zone for react news ag',
             'PrivateZone': False
         }
     )
-    hosted_zone_id = route53_response['HostedZone']['Id']
+    
+    """
+    For example, if your S3 bucket is in the ap-southeast-2 region, the Hosted Zone ID for S3 websites 
+    (not your domain's hosted zone ID) is Z1WCIGYICN2BYD. This value is constant for each AWS service in
+    each region and can be found in the AWS documentation for creating alias records that point to S3 buckets.
+    """
+    hosted_zone_id = route53_response['HostedZone']['Id'].replace("/hostedzone/", "")
     print(hosted_zone_id)
-    print(hosted_zone_id.length)
+    print(len(hosted_zone_id))
     # Create the alias record
     """
     change_resource_record_set():Creates, changes, or deletes a resource record set, which contains authoritative DNS
@@ -76,6 +83,33 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
     """
     
 
+    """
+    The error message indicates that the target you're trying to create an alias to (kevindaviesnz.github.io.s3-website-ap-southeast-2.amazonaws.com) is not found in the Route 53 hosted zone (Z03525981JSEQE0OVYVVK).
+
+    This issue typically arises because you're trying to create an alias record to an S3 website endpoint directly, which is not supported. Instead, you should create an alias to the CloudFront distribution associated with your S3 bucket, if you're using CloudFront to serve the content of your S3 bucket.
+
+    Here's how you can resolve this issue:
+
+    Create a CloudFront Distribution: If you're using CloudFront to serve the content of your S3 bucket, create a CloudFront distribution for your S3 bucket.
+    Use CloudFront Domain Name: Instead of using the S3 website endpoint (kevindaviesnz.github.io.s3-website-ap-southeast-2.amazonaws.com), use the domain name of your CloudFront distribution as the alias target in Route 53.
+    Configure Route 53 Alias to CloudFront: Set up the Route 53 alias record to point to the CloudFront distribution using its domain name.
+    Verify DNS Record: Ensure that the DNS record you're trying to create in Route 53 is permitted in the hosted zone. It seems like there might be an issue with the DNS name kevindaviesnz.github.io. in the hosted zone kevindaviesnz.github.io.s3-website-ap-southeast-2.amazonaws.com.
+    Here's an example of how the Route 53 alias record might look like when pointing to a CloudFront distribution:
+    
+    {
+        "Action": "UPSERT",
+        "ResourceRecordSet": {
+            "Name": "example.com.",
+            "Type": "A",
+            "AliasTarget": {
+            "HostedZoneId": "Z2FDTNDATAQYW2",  # CloudFront Hosted Zone ID
+            "DNSName": "d123456789.cloudfront.net.",  # CloudFront Domain Name
+            "EvaluateTargetHealth": false
+            }
+        }
+    }
+
+    """
     response = route53_client.change_resource_record_sets(
         HostedZoneId=hosted_zone_id, # required
         ChangeBatch={ # required
@@ -110,16 +144,18 @@ def remove_bucket(domain:str, s3_client:object):
 s3_client = boto3.client('s3')
 domain = "kevindaviesnz.github.io"
 subdomain = "reactnewsag.kevindaviesnz.github.io"
-hosted_zone_name = "kevindaviesnz2.github.io.s3-website-ap-southeast-2.amazonaws.com."
+hosted_zone_name = "kevindaviesnz.github.io.s3-website-ap-southeast-2.amazonaws.com."
 # S3 website endpoint (Do not use "http://" or "https://", just the domain)
-s3_website_endpoint = 's3-website-ap-southeast-2.amazonaws.com'
+s3_website_endpoint = 'kevindaviesnz.github.io.s3-website-ap-southeast-2.amazonaws.com'
 route53_client = boto3.client('route53')
     
 #add_static_website_bucket(domain=domain, s3_client=s3_client)
 #add_static_website_bucket(domain=subdomain, s3_client=s3_client)
 configure_route_53(hosted_zone_name=hosted_zone_name, s3_website_endpoint=s3_website_endpoint, route53_client=route53_client)
-# remove_bucket(domain=domain, s3_client=s3_client)
+#remove_bucket(domain=domain, s3_client=s3_client)
 #remove_bucket(domain=subdomain, s3_client=s3_client)
+
+
 
 
 

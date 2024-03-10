@@ -57,7 +57,7 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
     # Create Route 53 hosted zone
     route53_response = route53_client.create_hosted_zone(
         Name=hosted_zone_name,
-        CallerReference='auniname',  # A unique string used to ensure idempotent requests
+        CallerReference='u9sif',  # A unique string used to ensure idempotent requests
         HostedZoneConfig={
             'Comment': 'Hosted zone for react news ag',
             'PrivateZone': False
@@ -65,7 +65,16 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
     )
     hosted_zone_id = route53_response['HostedZone']['Id']
     # Create the alias record
-    response = route53_client.change_resource_record_sets(
+    """
+    change_resource_record_set():Creates, changes, or deletes a resource record set, which contains authoritative DNS
+    information for a specified domain name or subdomain name. For example, you can use
+    ChangeResourceRecordSets to create a resource record set that routes traﬃc for
+    test.example.com to a web server that has an IP address of 192.0.2.44.
+    @see https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/route53/client/change_resource_record_sets.html#
+    """
+    
+    """
+        response = route53_client.change_resource_record_sets(
         HostedZoneId=hosted_zone_id,
         ChangeBatch={
             'Comment': 'Adding alias record to S3 website endpoint',
@@ -75,16 +84,49 @@ def configure_route_53(hosted_zone_name:str, s3_website_endpoint:str, route53_cl
                     'ResourceRecordSet': {
                         'Name': domain,
                         'Type': 'A',  # Alias record
+                        'SetIdentifier': 'string',
+                        'Weight': 123,
+                        'Region': 'ap-southeast-2',
+                        'GeoLocation': {
+                            'ContinentCode': 'string',
+                            'CountryCode': 'string',
+                            'SubdivisionCode': 'string'
+                         },
+                        'Failover': 'PRIMARY'|'SECONDARY',
+                        'MultiValueAnswer': True|False,
+                        'TTL': 123,
+                        'ResourceRecords': [
+                            {
+                                'Value': 'string'
+                            },
+                        ],                         
                         'AliasTarget': {
                             'HostedZoneId': hosted_zone_id,  # This is the hosted zone ID for S3 websites (This value is for the ap-southeast-2 region; it may vary)
                             'DNSName': f'{s3_website_endpoint}',
                             'EvaluateTargetHealth': False
                         }
+                        'HealthCheckId': 'string',
+                        'TrafficPolicyInstanceId': 'string',
+                        'CidrRoutingConfig': {
+                            'CollectionId': 'string',
+                            'LocationName': 'string',
+                         },
+                        'GeoProximityLocation': {
+                            'AWSRegion': 'string',
+                            'LocalZoneGroup': 'string',
+                            'Coordinates': {
+                                'Latitude': 'string',
+                                'Longitude': 'string'
+                            },
+                            'Bias': 123
+                        }                         
                     }
                 }
             ]
         }
     )
+
+    """
     
 
 def remove_bucket(domain:str, s3_client:object):
@@ -102,8 +144,8 @@ route53_client = boto3.client('route53')
     
 #add_static_website_bucket(domain=domain, s3_client=s3_client)
 #add_static_website_bucket(domain=subdomain, s3_client=s3_client)
-#configure_route_53(hosted_zone_name=hosted_zone_name, s3_website_endpoint=s3_website_endpoint, route53_client=route53_client)
-remove_bucket(domain=domain, s3_client=s3_client)
+configure_route_53(hosted_zone_name=hosted_zone_name, s3_website_endpoint=s3_website_endpoint, route53_client=route53_client)
+# remove_bucket(domain=domain, s3_client=s3_client)
 #remove_bucket(domain=subdomain, s3_client=s3_client)
 
 

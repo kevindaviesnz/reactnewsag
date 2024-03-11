@@ -1,0 +1,50 @@
+{
+    "news_article": {
+      "S": "breakingnewsitem"
+    },
+    "categories": {
+      "L": [
+        {
+          "S": "World"
+        }
+      ]
+    },
+    "credit": {
+      "S": "httt://example.com"
+    },
+    "publication_date": {
+      "S": "31 June 2030"
+    },
+    "agency": {
+      "M": {
+        "agency_name": {
+          "S": "Reuters"
+        }
+      }
+    },
+    "authors": {
+      "L": [
+        {
+          "M": {
+            "author_name": {
+              "S": "M Smith"
+            }
+          }
+        }
+      ]
+    },
+    "images": {
+      "L": [
+        {
+          "M": {
+            "description": {
+              "S": "A spectactuar image"
+            },
+            "uri": {
+              "S": "http://example.com/animage.png"
+            }
+          }
+        }
+      ]
+    }
+  }

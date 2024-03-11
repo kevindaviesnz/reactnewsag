@@ -1,0 +1,30 @@
+[
+    {
+        "images": [{
+            "description":"A description",
+            "uri":"Link to image"
+        }],
+
+        "authors":[
+            {
+                "author__name":"author name"
+            }
+        ],
+
+        "agency": {
+            "agency_name":"name of agency"
+        },
+
+        "publication_date": "date of publication",
+
+        "body": "news article body",
+
+        "credit": "Credit article url",
+
+        "categories": [
+            "sports",
+            "breaking news",
+            "world"
+        ]
+    }
+]

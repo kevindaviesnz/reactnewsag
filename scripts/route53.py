@@ -148,6 +148,7 @@ hosted_zone_name = "kevindaviesnz.github.io.s3-website-ap-southeast-2.amazonaws.
 # S3 website endpoint (Do not use "http://" or "https://", just the domain)
 s3_website_endpoint = 'kevindaviesnz.github.io.s3-website-ap-southeast-2.amazonaws.com'
 route53_client = boto3.client('route53')
+cloudfront_domain_name = "d18uo3l0wot9kq.cloudfront.net"
     
 #add_static_website_bucket(domain=domain, s3_client=s3_client)
 #add_static_website_bucket(domain=subdomain, s3_client=s3_client)

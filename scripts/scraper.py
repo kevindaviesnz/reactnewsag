@@ -1,6 +1,7 @@
 
 from bs4 import BeautifulSoup
 from typing import List, Dict
+from foxnews import foxnews_parse_article_content
 import requests
 
 """
@@ -21,22 +22,11 @@ def fetch_html(url):
         print("Error fetching HTML:", e)
         return None
 
-def foxnews_parse_article_content(article_container_html):
-    article_container = {}
-    # bs4.element.Tag
-    print("============== Article container starts =========")
-    print(type(article_container_html))
-    # article_soup = BeautifulSoup(article_container_html, features="html.parser")
-    #images = article_soup.find_all("picture")
-    print("============== Article container ends =========")
-    return article_container_html
 
-def foxnews_get_article_containers(soup):
-    # Finds all <article> elements that have a data-card-type attribute. Assign the result to the variable 
-    # article_containers, and annotate article_containers to be a list of dictionaries.
+def get_article_containers(soup, tag, parse_fn):
     # soup.find_all() returns a bs4.element.ResultSet
     article_containers: List[dict] = list(
-        map(foxnews_parse_article_content, soup.find_all("article"))
+        map(parse_fn, soup.find_all(tag))
     )
     return article_containers
 
@@ -48,5 +38,5 @@ if __name__ == "__main__":
     soup = BeautifulSoup(html, features="html.parser")
     # print(soup.prettify())
     # print(soup.article)
-    foxnews_articles = foxnews_get_article_containers(soup)
-    # print(foxnews_articles[0])
+    foxnews_articles = get_article_containers(soup=soup, tag="article", parse_fn=foxnews_parse_article_content)
+    print(foxnews_articles)

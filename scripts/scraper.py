@@ -21,32 +21,32 @@ def fetch_html(url):
         print("Error fetching HTML:", e)
         return None
 
+def foxnews_parse_article_content(article_container_html):
+    article_container = {}
+    # bs4.element.Tag
+    print("============== Article container starts =========")
+    print(type(article_container_html))
+    # article_soup = BeautifulSoup(article_container_html, features="html.parser")
+    #images = article_soup.find_all("picture")
+    print("============== Article container ends =========")
+    return article_container_html
 
-
-def nzherald_get_article_containers(soup):
+def foxnews_get_article_containers(soup):
     # Finds all <article> elements that have a data-card-type attribute. Assign the result to the variable 
     # article_containers, and annotate article_containers to be a list of dictionaries.
-    article_containers: List[dict] = soup.find_all("article", attrs={"data-test-ui": True})
-    print(article_containers[0])
-    """
-    article_containers = list(
-        filter(
-            # Defines a lambda function that takes an argument x and returns True if 
-            # "https://www.nzherald.co.nz/" is present in the value associated with the key "src"
-            # in the dictionary x. This lambda function will be used as the filtering condition.
-            lambda x: "story-card__content" in x["class"],
-            article_containers,
-        )
+    # soup.find_all() returns a bs4.element.ResultSet
+    article_containers: List[dict] = list(
+        map(foxnews_parse_article_content, soup.find_all("article"))
     )
+    return article_containers
 
-    """
-
-#    print(article_containers)
-    #output_image_url_list: List[str] = extract_image_urls(images_urls)
-    # return output_image_url_list
 
 if __name__ == "__main__":
     html = fetch_html("https://www.foxnews.com/")
-    print(html)
+    #print(html)
+    # @see https://www.crummy.com/software/BeautifulSoup/bs4/doc/
     soup = BeautifulSoup(html, features="html.parser")
-    nzherald_get_article_containers(soup)
+    # print(soup.prettify())
+    # print(soup.article)
+    foxnews_articles = foxnews_get_article_containers(soup)
+    # print(foxnews_articles[0])

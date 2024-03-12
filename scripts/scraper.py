@@ -24,11 +24,20 @@ def fetch_html(url):
 
 
 def get_article_containers(soup, tag, parse_fn):
-    # soup.find_all() returns a bs4.element.ResultSet
-    article_containers: List[dict] = list(
-        map(parse_fn, soup.find_all(tag))
-    )
+    """
+    Extracts article containers from BeautifulSoup's ResultSet using a specified tag and parsing function.
+
+    :param soup: BeautifulSoup object representing the HTML content
+    :param tag: The tag to search for within the soup
+    :param parse_fn: A function to parse each found tag and return a dictionary representing the article container
+    :return: List of article containers as dictionaries
+    """
+    # Use a generator expression inside a list comprehension
+    article_containers: List[dict] = [
+        item for item in (parse_fn(x) for x in soup.find_all(tag)) if item is not None
+    ]
     return article_containers
+
 
 
 if __name__ == "__main__":

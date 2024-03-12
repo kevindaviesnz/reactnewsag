@@ -1,7 +1,11 @@
 [
     {
+        "uuid": "id derived from news article",
+
+        "headline": "A headline",
+
         "uri": "http://example.com",
-        
+
         "images": [{
             "description":"A description",
             "uri":"Link to image"
@@ -19,9 +23,9 @@
 
         "publication_date": "date of publication",
 
-        "body": "news article body",
+        "credit_uri": "Credit article uri",
 
-        "credit": "Credit article url",
+        "ttl": 3000,
 
         "categories": [
             "sports",

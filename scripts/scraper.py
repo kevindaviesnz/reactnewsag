@@ -22,30 +22,27 @@ def fetch_html(url):
         print("Error fetching HTML:", e)
         return None
 
-
-def get_article_containers(soup, tag, parse_fn):
+def get_article_containers(url: str, tag: str) -> List[str]:
     """
-    Extracts article containers from BeautifulSoup's ResultSet using a specified tag and parsing function.
+    Fetches HTML content from a URL and extracts elements based on the specified tag.
+    Returns a list of raw HTML strings for each found element.
 
-    :param soup: BeautifulSoup object representing the HTML content
-    :param tag: The tag to search for within the soup
-    :param parse_fn: A function to parse each found tag and return a dictionary representing the article container
-    :return: List of article containers as dictionaries
+    :param url: URL of the webpage to scrape.
+    :param tag: The tag to search for within the HTML content.
+    :return: List of raw HTML strings for each found tag.
     """
-    # Use a generator expression inside a list comprehension
-    article_containers: List[dict] = [
-        item for item in (parse_fn(x) for x in soup.find_all(tag)) if item is not None
-    ]
-    return article_containers
+    def fetch_html(url: str) -> str:
+        response = requests.get(url)
+        return response.text
 
+    html = fetch_html(url=url)
+    soup = BeautifulSoup(html, features="html.parser")
+    elements_raw_html = [str(element) for element in soup.find_all(tag)]
+    return elements_raw_html
 
 
 if __name__ == "__main__":
-    html = fetch_html("https://www.foxnews.com/")
-    #print(html)
+    
     # @see https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-    soup = BeautifulSoup(html, features="html.parser")
-    # print(soup.prettify())
-    # print(soup.article)
-    foxnews_articles = get_article_containers(soup=soup, tag="article", parse_fn=foxnews_parse_article_content)
+    foxnews_articles = get_article_containers("http://foxnews.com", tag="article")
     print(foxnews_articles)

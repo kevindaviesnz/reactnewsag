@@ -26,9 +26,12 @@ $ python -m http.server 3000
 src/App.js
 
 Deploying to Github pages:
+
+https://github.com/gitname/react-gh-pages
+
 npm install --save gh-pages
 package.json:
-"homepage": "https://kevindaviesnz.github.io/reactcalculator/",
+"homepage": "https://kevindaviesnz.github.io/reactnewsag",
 "scripts": {
   "predeploy": "npm run build",
   "deploy": "gh-pages -d build",
@@ -39,14 +42,22 @@ package.json:
 
 },
 
-}
-npm run build
-git add .
-git commit -m "Add build files for GitHub Pages deployment"
-git push origin gh-pages
-npm run deploy
-github -> reactcalculator -> settings -> pages -> select gh-pages as branch
+$ git remote add origin https://github.com/kevindaviesnz/reactnewsag.git
 
-https://kevindaviesnz.github.io/reactcalculator/
+$ npm run deploy -- -m "Deploy React app to GitHub Pages"
+
+
+npm run deploy
+github -> reactnewsag -> settings -> pages -> select gh-pages as branch
+
+$ git add .
+$ git commit -m "Configure React app for deployment to GitHub Pages"
+$ git push origin master
+
+
+
+https://kevindaviesnz.github.io/reactnewsag/
 
 https://kdaviesnz.atlassian.net/jira/software/c/projects/NWAG/issues
+
+http://reactnewsag.s3-website-ap-southeast-2.amazonaws.com/

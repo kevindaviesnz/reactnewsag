@@ -9,14 +9,15 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'html': json.dumps(html_content),
-        'tag': event["tag"]
+        'tag': event["tag"],
+        'url': event["url"]
     }
 
 
 if __name__ == "__main__":
     
     event = {
-        "url":"http://foxnews.com",
+        "url":"https://foxnews.com",
         "tag":"article"
     }
     foxnews_articles = lambda_handler(event=event, context=None)

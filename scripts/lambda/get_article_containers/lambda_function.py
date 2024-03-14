@@ -10,7 +10,8 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
-        'containers': json.dumps(elements_data, ensure_ascii=False)
+        'containers': json.dumps(elements_data, ensure_ascii=False),
+        'tag': tag
     }
 
 if __name__ == "__main__":

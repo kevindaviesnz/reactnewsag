@@ -10,7 +10,7 @@ def lambda_handler(event, context):
 
     return {
         'statusCode': 200,
-        'containers': json.dumps(elements_data, ensure_ascii=False),
+        'articles': json.dumps(elements_data, ensure_ascii=False),
         'tag': tag,
         "url":"https://foxnews.com"
     }

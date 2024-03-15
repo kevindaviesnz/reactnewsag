@@ -1,19 +1,18 @@
 import requests
 import json
 import boto3
-import uuid
 
 s3_client = boto3.client('s3')
 
 def lambda_handler(event, context):
     
-    
+    url = event["url"]
     response = requests.get(event["url"])
     response.raise_for_status()  # Raise an exception for bad status codes
     html_content = response.text
     bucket = "kdaviesnz-news-bucket"
     # Generate a unique S3 key for the HTML content
-    s3_key = f"{event["url"]}/{uuid.uuid4()}.html"
+    s3_key = f'kdaviesnz.{url.replace("//", "_").replace(":", "_")}.html'
 
     # Upload HTML content to S3
     s3_client.put_object(Body=html_content, Bucket=bucket, Key=s3_key)

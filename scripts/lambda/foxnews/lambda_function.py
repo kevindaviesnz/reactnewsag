@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import json
+import requests
+
 
 def foxnews_parse_article_content(article_element: str):
     soup = BeautifulSoup(article_element, 'html.parser')
@@ -33,18 +35,23 @@ def foxnews_parse_article_content(article_element: str):
         return None
 
 def lambda_handler(event, context):
+    
+    response = requests.get(event["articles_url"])
+    response.raise_for_status()  # Raise an exception for bad status codes
+    articles_content = response.text
+
     # Use list() to convert the map object to a list
-    parsed_articles = list(filter(None, map(foxnews_parse_article_content, event["articles"])))
+    parsed_articles = list(filter(None, map(foxnews_parse_article_content, articles_content)))
     return {
         'statusCode': 200,
-        'articles': [{"uuid":"hello", "headline":"hey there!", "ttl":"5000"}], # parsed_articles,
+        'articles': parsed_articles,
         'tag': event['tag']
     }
 
 
 if __name__ == "__main__":
     event = {
-        "articles": ["<html><body><header><a href='/some-uri' data-omtr-intcmp='some-uuid'>Headline Text</a></header></body></html>", "<html><body>No Header Here</body></html>"],
+        "articles_url": "https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.html%3FAWSAccessKeyId%3DAKIA42RD47OJILOLQHQO%26Signature%3D30Q2kJVKs2T7Vvp%252B1JOBF%252B4TssU%253D%26Expires%3D1710475837.json?AWSAccessKeyId=AKIA42RD47OJM3V6Q2HU&Signature=g9gAgp9Cjh%2Bm%2BUsXVVR1XVWMNK8%3D&Expires=1710477809",
         "tag": "p"        
     }
     parsed_articles = lambda_handler(event=event, context=None)

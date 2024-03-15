@@ -20,7 +20,9 @@ def lambda_handler(event, context):
 
     # Extract the text content directly into the array
     elements_data = [element.prettify() for element in soup.find_all(tag)]
-    print(elements_data)
+    print(elements_data[0])
+    print("--------------------------------------------")
+    print(elements_data[10])
     
     # Convert elements_data to JSON string
     json_data = json.dumps(elements_data)
@@ -38,7 +40,7 @@ def lambda_handler(event, context):
     articles_url = s3_client.generate_presigned_url(
         'get_object',
         Params={'Bucket': bucket, 'Key': s3_key},
-        ExpiresIn=3600  # URL expiration time (e.g., 1 hour)
+        ExpiresIn=172800  # URL expiration time (e.g., 1 hour)
     )
 
     return {
@@ -51,7 +53,7 @@ def lambda_handler(event, context):
 if __name__ == "__main__":
     
     event = {
-        "presigned_url": "https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.html?AWSAccessKeyId=AKIA42RD47OJILOLQHQO&Signature=30Q2kJVKs2T7Vvp%2B1JOBF%2B4TssU%3D&Expires=1710475837",
+        "presigned_url": "https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.html?AWSAccessKeyId=AKIA42RD47OJM3V6Q2HU&Signature=ayMaHoDJo4%2B%2F%2F%2F8cGQmwfJ5Jrs4%3D&Expires=1710708201",
         "tag": "article",
         "url": "https://foxnews.com"       
     }

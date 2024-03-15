@@ -41,7 +41,8 @@ def lambda_handler(event, context):
     articles_content = response.text
 
     # Use list() to convert the map object to a list
-    parsed_articles = list(filter(None, map(foxnews_parse_article_content, articles_content)))
+    # parsed_articles = list(filter(None, map(foxnews_parse_article_content, articles_content)))
+    parsed_articles = articles_content
     return {
         'statusCode': 200,
         'articles': parsed_articles,
@@ -51,7 +52,7 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
     event = {
-        "articles_url": "https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.html%3FAWSAccessKeyId%3DAKIA42RD47OJILOLQHQO%26Signature%3D30Q2kJVKs2T7Vvp%252B1JOBF%252B4TssU%253D%26Expires%3D1710475837.json?AWSAccessKeyId=AKIA42RD47OJM3V6Q2HU&Signature=g9gAgp9Cjh%2Bm%2BUsXVVR1XVWMNK8%3D&Expires=1710477809",
+        "articles_url": "https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.html%3FAWSAccessKeyId%3DAKIA42RD47OJM3V6Q2HU%26Signature%3DayMaHoDJo4%252B%252F%252F%252F8cGQmwfJ5Jrs4%253D%26Expires%3D1710708201.json?AWSAccessKeyId=AKIA42RD47OJM3V6Q2HU&Signature=9HOWKwRLfDS8NSbJ%2BTNBowB14X0%3D&Expires=1710708523",
         "tag": "p"        
     }
     parsed_articles = lambda_handler(event=event, context=None)

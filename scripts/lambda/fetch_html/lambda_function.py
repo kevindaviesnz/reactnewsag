@@ -1,14 +1,33 @@
 import requests
 import json
+import boto3
+import uuid
+
+s3_client = boto3.client('s3')
 
 def lambda_handler(event, context):
+    
+    
     response = requests.get(event["url"])
     response.raise_for_status()  # Raise an exception for bad status codes
     html_content = response.text
+    bucket = "kdaviesnz-news-bucket"
+    # Generate a unique S3 key for the HTML content
+    s3_key = f"{event["url"]}/{uuid.uuid4()}.html"
 
+    # Upload HTML content to S3
+    s3_client.put_object(Body=html_content, Bucket=bucket, Key=s3_key)
+
+    # Generate a presigned URL for the S3 object
+    presigned_url = s3_client.generate_presigned_url(
+        'get_object',
+        Params={'Bucket': bucket, 'Key': s3_key},
+        ExpiresIn=3600  # URL expiration time (e.g., 1 hour)
+    )
+    
     return {
         'statusCode': 200,
-        'html': json.dumps(html_content),
+        'presigned_url':presigned_url,
         'tag': event["tag"],
         'url': event["url"]
     }

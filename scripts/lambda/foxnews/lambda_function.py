@@ -1,7 +1,9 @@
 from bs4 import BeautifulSoup
 import json
 import requests
+import boto3
 
+s3_client = boto3.client('s3')
 
 def foxnews_parse_article_content(article_element: str):
     soup = BeautifulSoup(article_element, 'html.parser')
@@ -36,24 +38,44 @@ def foxnews_parse_article_content(article_element: str):
 
 def lambda_handler(event, context):
     
+    # Assuming event["articles_url"] is defined and contains the URL to a JSON file
     response = requests.get(event["articles_url"])
-    response.raise_for_status()  # Raise an exception for bad status codes
-    articles_content = response.text
+    response.raise_for_status()  # Raise an exception for HTTP error responses
+    articles_json = response.json()  # This method parses the JSON response into a Python dict or list
+    parsed_articles_json = map("foxnews_parse_article_content", articles_json)
+    # Store articles in a bucket
+    bucket = "kdaviesnz-news-bucket"
+    
+    # Convert elements_data to JSON string
+    json_data = json.dumps(parsed_articles_json)
 
-    # Use list() to convert the map object to a list
-    # parsed_articles = list(filter(None, map(foxnews_parse_article_content, articles_content)))
-    parsed_articles = articles_content
+    # Convert JSON string to bytes
+    data_bytes = json_data.encode('utf-8')
+
+    # Generate a unique S3 key for the articles
+    s3_key = f'kdaviesnz.foxnews.json'
+
+    # Upload json content to S3
+    s3_client.put_object(Body=data_bytes, Bucket=bucket, Key=s3_key)
+    
+    # Generate a presigned URL for the S3 object
+    parsed_articles_url = s3_client.generate_presigned_url(
+        'get_object',
+        Params={'Bucket': bucket, 'Key': s3_key},
+        ExpiresIn=172800  # URL expiration time (e.g., 1 hour)
+    )
+    
     return {
         'statusCode': 200,
-        'articles': parsed_articles,
-        'tag': event['tag']
+        'bucket_name': bucket,
+        'parsed_articles_url': parsed_articles_url
     }
 
 
 if __name__ == "__main__":
     event = {
         "articles_url": "https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.html%3FAWSAccessKeyId%3DAKIA42RD47OJM3V6Q2HU%26Signature%3DayMaHoDJo4%252B%252F%252F%252F8cGQmwfJ5Jrs4%253D%26Expires%3D1710708201.json?AWSAccessKeyId=AKIA42RD47OJM3V6Q2HU&Signature=9HOWKwRLfDS8NSbJ%2BTNBowB14X0%3D&Expires=1710708523",
-        "tag": "p"        
+        "tag": "article"        
     }
     parsed_articles = lambda_handler(event=event, context=None)
     print(parsed_articles)

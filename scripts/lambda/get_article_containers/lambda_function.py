@@ -20,9 +20,9 @@ def lambda_handler(event, context):
 
     # Extract the text content directly into the array
     elements_data = [element.prettify() for element in soup.find_all(tag)]
-    print(elements_data[0])
-    print("--------------------------------------------")
-    print(elements_data[10])
+    #print(elements_data[0])
+    #print("--------------------------------------------")
+    #print(elements_data[10])
     
     # Convert elements_data to JSON string
     json_data = json.dumps(elements_data)

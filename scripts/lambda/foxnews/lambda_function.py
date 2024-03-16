@@ -42,12 +42,10 @@ def lambda_handler(event, context):
     response = requests.get(event["articles_url"])
     response.raise_for_status()  # Raise an exception for HTTP error responses
     articles_json = response.json()  # This method parses the JSON response into a Python dict or list
-    parsed_articles_json = map("foxnews_parse_article_content", articles_json)
+    parsed_articles_json = list(map(foxnews_parse_article_content, articles_json))
+    json_data = json.dumps(parsed_articles_json)
     # Store articles in a bucket
     bucket = "kdaviesnz-news-bucket"
-    
-    # Convert elements_data to JSON string
-    json_data = json.dumps(parsed_articles_json)
 
     # Convert JSON string to bytes
     data_bytes = json_data.encode('utf-8')

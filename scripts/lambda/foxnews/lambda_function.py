@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import json
 import requests
 import boto3
+import uuid
 
 s3_client = boto3.client('s3')
 
@@ -38,8 +39,8 @@ def foxnews_parse_article_content(article_element: str):
 
 def lambda_handler(event, context):
     
-    # Assuming event["articles_url"] is defined and contains the URL to a JSON file
-    response = requests.get(event["articles_url"])
+    # url to json file to parse
+    response = requests.get(event["presigned_url"])
     response.raise_for_status()  # Raise an exception for HTTP error responses
     articles_json = response.json()  # This method parses the JSON response into a Python dict or list
     parsed_articles_json = list(map(foxnews_parse_article_content, articles_json))
@@ -54,7 +55,8 @@ def lambda_handler(event, context):
     s3_key = f'kdaviesnz.foxnews.json'
 
     # Upload json content to S3
-    s3_client.put_object(Body=data_bytes, Bucket=bucket, Key=s3_key)
+    res = s3_client.put_object(Body=data_bytes, Bucket=bucket, Key=s3_key)
+    print(res)
     
     # Generate a presigned URL for the S3 object
     parsed_articles_url = s3_client.generate_presigned_url(
@@ -66,13 +68,15 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'bucket_name': bucket,
-        'parsed_articles_url': parsed_articles_url
+        'parsed_articles_url': parsed_articles_url,
+        'uuid':  str(uuid.uuid4()),
+        's3_object_key': 'blah'
     }
 
 
 if __name__ == "__main__":
     event = {
-        "articles_url": "https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.html%3FAWSAccessKeyId%3DAKIA42RD47OJM3V6Q2HU%26Signature%3DayMaHoDJo4%252B%252F%252F%252F8cGQmwfJ5Jrs4%253D%26Expires%3D1710708201.json?AWSAccessKeyId=AKIA42RD47OJM3V6Q2HU&Signature=9HOWKwRLfDS8NSbJ%2BTNBowB14X0%3D&Expires=1710708523",
+        "presigned_url":"https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.json?AWSAccessKeyId=AKIA42RD47OJM3V6Q2HU&Signature=iNC0%2BnQUfahKObCLS1x440T%2BySc%3D&Expires=1710880508",
         "tag": "article"        
     }
     parsed_articles = lambda_handler(event=event, context=None)

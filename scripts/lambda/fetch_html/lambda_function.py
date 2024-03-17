@@ -5,11 +5,11 @@ import re
 
 s3_client = boto3.client('s3')
 
+
 def extract_tag_chunks(text, tag):
     pattern = r"<" + tag + r".*?</" + tag + r">"
-    chunks = re.findall(pattern, text)
+    chunks = re.findall(pattern, text, re.DOTALL)
     return chunks
-
 
 def lambda_handler(event, context):
     
@@ -17,7 +17,6 @@ def lambda_handler(event, context):
     response = requests.get(event["url"])
     response.raise_for_status()  # Raise an exception for bad status codes
     html_content = response.text
-    
     presigned_url = "";
 
     elements_data = extract_tag_chunks(html_content, event["tag"])
@@ -41,7 +40,6 @@ def lambda_handler(event, context):
         ExpiresIn=172800  # URL expiration time (e.g., 1 hour)
     )
 
-    
     return {
         'statusCode': 200,
         'presigned_url':presigned_url,

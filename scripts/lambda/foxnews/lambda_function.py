@@ -19,12 +19,19 @@ def foxnews_parse_article_content(article_element: str):
         uri_suffix = uri.rsplit("/", 1)[-1].replace("-", "_")
 
         article_container = {
+            "uuid": f"{uuid_base}{uri_suffix}",
+        }
+
+"""
+        article_container = {
             "uri": uri,
             "headline": a_tag.text.strip(),
             "uuid": f"{uuid_base}{uri_suffix}",
             "categories": [uri.split("/")[3] if len(uri.split("/")) > 3 else None],
             'ttl': 86400,  # 24 hours
         }
+
+"""
 
         # Find picture and img tags
         picture_tag = soup.find('picture')
@@ -55,8 +62,7 @@ def lambda_handler(event, context):
     s3_key = f'kdaviesnz.foxnews.json'
 
     # Upload json content to S3
-    res = s3_client.put_object(Body=data_bytes, Bucket=bucket, Key=s3_key)
-    print(res)
+    s3_client.put_object(Body=data_bytes, Bucket=bucket, Key=s3_key)
     
     # Generate a presigned URL for the S3 object
     parsed_articles_url = s3_client.generate_presigned_url(
@@ -65,12 +71,13 @@ def lambda_handler(event, context):
         ExpiresIn=172800  # URL expiration time (e.g., 1 hour)
     )
     
+    # s3://kdaviesnz-news-bucket/kdaviesnz.foxnews.json
     return {
         'statusCode': 200,
         'bucket_name': bucket,
         'parsed_articles_url': parsed_articles_url,
         'uuid':  str(uuid.uuid4()),
-        's3_object_key': 'blah'
+        's3_object_key': 'kdaviesnz.foxnews.json'
     }
 
 

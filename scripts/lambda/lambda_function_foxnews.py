@@ -23,8 +23,7 @@ def foxnews_parse_article_content(article_element: str):
             "headline": a_tag.text.strip(),
             "uuid": f"{uuid_base}{uri_suffix}",
             "categories": [uri.split("/")[3] if len(uri.split("/")) > 3 else None],
-            "images": [],
-            'ttl': "86400",  # 24 hours
+            'ttl': 86400,  # 24 hours
         }
 
 
@@ -39,36 +38,41 @@ def foxnews_parse_article_content(article_element: str):
     else:
         return None
 
-def remove_items_that_are_already_in_the_database(item):
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('NewsArticles')
-    
-    # Check if the item already exists
-    uuid = item['uuid']
-    response = table.get_item(
-        Key={
-            'uuid': uuid
-        }
-    )
-    
-    if 'Item' not in response:
-        return True
-    
-    return False
-
 def lambda_handler(event, context):
-    # json items are contained in the `Items` array
+    
+    # url to json file to parse
     response = requests.get(event["presigned_url"])
     response.raise_for_status()  # Raise an exception for HTTP error responses
     articles_json = response.json()  # This method parses the JSON response into a Python dict or list
-    event["Items"] = articles_json
-    articles = []
-    for item in event['Items']:
-        item_parsed = foxnews_parse_article_content(item)
-        if (item_parsed != None):
-            articles.append(item_parsed)
-    top_articles = list(filter(remove_items_that_are_already_in_the_database, articles[:10]))
-    return top_articles
+    parsed_articles_json = list(map(foxnews_parse_article_content, articles_json[:10]))
+    json_data = json.dumps(parsed_articles_json)
+    # Store articles in a bucket
+    bucket = "kdaviesnz-news-bucket"
+
+    # Convert JSON string to bytes
+    data_bytes = json_data.encode('utf-8')
+
+    # Generate a unique S3 key for the articles
+    s3_key = f'kdaviesnz.foxnews.json'
+
+    # Upload json content to S3
+    s3_client.put_object(Body=data_bytes, Bucket=bucket, Key=s3_key)
+    
+    # Generate a presigned URL for the S3 object
+    parsed_articles_url = s3_client.generate_presigned_url(
+        'get_object',
+        Params={'Bucket': bucket, 'Key': s3_key},
+        ExpiresIn=172800  # URL expiration time (e.g., 1 hour)
+    )
+    
+    # s3://kdaviesnz-news-bucket/kdaviesnz.foxnews.json
+    return {
+        'statusCode': 200,
+        'bucket_name': bucket,
+        'parsed_articles_url': parsed_articles_url,
+        'uuid':  str(uuid.uuid4()),
+        's3_object_key': 'kdaviesnz.foxnews.json'
+    }
 
 
 if __name__ == "__main__":

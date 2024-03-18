@@ -39,23 +39,6 @@ def foxnews_parse_article_content(article_element: str):
     else:
         return None
 
-def remove_items_that_are_already_in_the_database(item):
-    dynamodb = boto3.resource('dynamodb')
-    table = dynamodb.Table('NewsArticles')
-    
-    # Check if the item already exists
-    uuid = item['uuid']
-    response = table.get_item(
-        Key={
-            'uuid': uuid
-        }
-    )
-    
-    if 'Item' not in response:
-        return True
-    
-    return False
-
 def lambda_handler(event, context):
     # json items are contained in the `Items` array
     response = requests.get(event["presigned_url"])
@@ -67,7 +50,7 @@ def lambda_handler(event, context):
         item_parsed = foxnews_parse_article_content(item)
         if (item_parsed != None):
             articles.append(item_parsed)
-    top_articles = list(filter(remove_items_that_are_already_in_the_database, articles[:10]))
+    top_articles = articles[:10]
     return top_articles
 
 

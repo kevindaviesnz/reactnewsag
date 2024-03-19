@@ -1,8 +1,7 @@
 import logo from './logo.svg';
-/*import './App.css';*/
+import './App.css';
 
-
-const Images = (props) => {
+const ArticleImages = (props) => {
   return (
     <div>
       {props.images.map((image, index) => {
@@ -14,11 +13,11 @@ const Images = (props) => {
   );
 };
 
-const Author = (props) => {
-  return <div>{props.author.name}</div>
+const ArticleAuthor = (props) => {
+  return <div>Author:{props.author.name}</div>
 }
 
-const Authors = (props) => {
+const ArticleAuthors = (props) => {
   return <div>
     {
       props.authors.map((author, index)=>{
@@ -30,39 +29,34 @@ const Authors = (props) => {
   </div>
 }
 
-const Body = (props) => {
+const ArticleBody = (props) => {
   return <div>{props.body}</div>
 }
 
-
 function App() {
-  const news_data = {
-    "authors":[
-      {"name":"An author"}
-    ],
-    "images":[
-      {"description":"An example image", "uri":"http://example.com/image.png"}
-    ],
-    "body": "This is the article body."
-  }
+  const images = [
+    { "uri": "http://example.com", "description": "An example image" },
+    {"uri":"http://example.com", "description":"Another example image"}
+  ]
   return (
     <div className="App">
       <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
+        <ArticleImages images={images} />
+        <ArticleAuthor author={{"name":"Me"}} />
+        <ArticleBody body="This is the body of the article" />
         <a
           className="App-link"
           href="https://reactjs.org"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Learn React!!! Oh Yeah!!!!
         </a>
       </header>
-      <Images images={news_data.images} />
-      <Authors authors={news_data.authors}/>
-      <Body body={news_data.body} />
     </div>
   );
 }

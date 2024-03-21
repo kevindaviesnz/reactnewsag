@@ -17,7 +17,7 @@ const Articles: FC = () => { // "FC" indicates that Articles is a FunctionCompon
             {articles.map((article: IArticle) => (
                 <div key={`article-${article.uuid}`}>
                     <NewsArticle />
-                    <img src={article.images[0]} alt="article image"/>
+                    <img src={`${article.images[0]}`} alt="article image"/>
                     <a href={`${article.uri}`}>{article.headline}</a> {' '}
                     {article.categories[0]}
                 </div>

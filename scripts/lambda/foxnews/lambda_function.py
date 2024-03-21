@@ -27,13 +27,11 @@ def foxnews_parse_article_content(article_element: str):
             'ttl': "86400",  # 24 hours
         }
 
-
         # Find picture and img tags
-        picture_tag = soup.find('picture')
-        if picture_tag:
-            image_tag = picture_tag.find('img')
-            src = image_tag.get('data-src') if image_tag else None
-            article_container["images"] = [f"http:{src}"] if src else []
+        img_tag = soup.find('img')
+        if img_tag:
+            src = f"http:{img_tag.get('src')}"
+            article_container["images"] = [src] 
 
         return article_container
     else:
@@ -56,7 +54,7 @@ def lambda_handler(event, context):
 
 if __name__ == "__main__":
     event = {
-        "presigned_url":"https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.json?AWSAccessKeyId=AKIA42RD47OJM3V6Q2HU&Signature=iNC0%2BnQUfahKObCLS1x440T%2BySc%3D&Expires=1710880508",
+        "presigned_url":"https://kdaviesnz-news-bucket.s3.amazonaws.com/kdaviesnz.https__foxnews.com.json?AWSAccessKeyId=AKIA42RD47OJM3V6Q2HU&Signature=bm9CN7GsuUmb0M6VrQWdjiVysCI%3D&Expires=1711163704",
         "tag": "article"        
     }
     parsed_articles = lambda_handler(event=event, context=None)

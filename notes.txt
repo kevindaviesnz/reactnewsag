@@ -61,3 +61,6 @@ https://kevindaviesnz.github.io/reactnewsag/
 https://kdaviesnz.atlassian.net/jira/software/c/projects/NWAG/issues
 
 http://reactnewsag.s3-website-ap-southeast-2.amazonaws.com/
+
+zip -r9 ../getnews.zip .  
+pip3 install requests  -t .
